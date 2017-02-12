@@ -61,6 +61,7 @@ int main(void){
  }
  fgets(trash, 8, stdin); //inserito per sopperire a problemi di buffer
  while(write_th_end==1){
+  memset(msg_send,'\0',sizeof(msg_send));
   fgets(msg_send, 1024, stdin);
   if(strcmp(msg_send, "/quit\n")==0)
    break;
@@ -88,10 +89,12 @@ void set_username(char *username, int sock_id){
    printf("Inserire un nome utente di seguito [MAX 127 caratteri]: ");
   else
    printf("\nIl nome utente è già stato utilizzato, inseriscine un altro [MAX 127 caratteri]: ");
+  memset(username,'\0',sizeof(username));
   scanf("%s*c", username);
   fflush(stdin);
   while(sizeof(username)>128){
    printf("Inserire un nome utente più breve: ");
+   memset(username,'\0',sizeof(username));
    scanf("%s*c", username);
    fflush(stdin);
   }  
@@ -110,6 +113,7 @@ void set_username(char *username, int sock_id){
 void *leggi(void *arg){
  int check, continua=1;
  while(continua){
+  memset(((dati_client*)arg)->msg_ricevuto,'\0',sizeof(((dati_client*)arg)->msg_ricevuto));
   check=read(((dati_client*)arg)->sock_id, ((dati_client*)arg)->msg_ricevuto, 2048);		
  if(check<0)
   printf("Errore nella ricezione del messaggio\n");

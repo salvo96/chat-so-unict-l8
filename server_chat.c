@@ -125,6 +125,7 @@ int main(void){
     utente[current_client].moderatore=0;			//imposto la modalità iniziale non moderatore
     utente[current_client].connesso=1;    			//imposto il client come connesso
     do{
+     memset(utente_str,'\0',sizeof(utente_str));
      check=read(utente[current_client].sockcl_id, utente_str, 128);    
      if(check<=0){	
       printf("Errore nella lettura dello user dell'utente\n");
@@ -191,7 +192,7 @@ void *ricevi(void *arg){		//questa funzione si occuperà di ricevere i messaggi 
   if((!testCodaVuota(*(utentei->coda_rif)))&&utentei->leggi){
    msg_pack=InizioCoda(*(utentei->coda_rif));
    if(msg_pack.client!=utentei->user_id){
-    bzero(messaggio, 2048);			
+    memset(messaggio,'\0',sizeof(messaggio));		
     if(utente[msg_pack.client].moderatore==1)
      strcat(messaggio, "MESSAGGIO DAL MODERATORE ");
      strcat(messaggio, utente[msg_pack.client].user);
@@ -240,6 +241,7 @@ void *client(void *arg){
  else{
   printf("L'utente %s si è connesso, client connessi: %d\n", ((dati_client*)arg)->user, client_connessi+1);
   while(continua){
+   memset(msg_pack.msg,'\0',sizeof(msg_pack.msg));
    check=read(((dati_client*)arg)->sockcl_id, msg_pack.msg, 1024);		//lettura messaggio da client
     if(check<0){
      printf("Errore durante la lettura del messaggio da parte dell'utente %s\n", ((dati_client*)arg)->user);
@@ -287,6 +289,7 @@ void *client(void *arg){
      }
      else if(strcmp(msg_pack.msg, "/connessi\n")==0){
       scrivi_cl("SERVER [YOU]: Inserisci la stanza [1-8] per vedere gli utenti connessi, 9 per la pubblica\n", ((dati_client*)arg));
+      memset(messaggio,'\0',sizeof(messaggio));
       leggi_cl(messaggio, ((dati_client*)arg));
       stanzab=atoi(messaggio);
       if((stanzab<1)||(stanzab>9))
@@ -300,6 +303,7 @@ void *client(void *arg){
        else{
         for(int i=0;i<client_connessi+1;i++)
          if((utente[i].stanza==stanzab)&&(utente[i].connesso==1)){
+          memset(user,'\0',sizeof(user));
           strcpy(user, utente[i].user);
           strcat(user, "\n");
           scrivi_cl(user, ((dati_client*)arg));
@@ -317,6 +321,7 @@ void *client(void *arg){
        if(check!=0)
         while(tentativi>0){
          scrivi_cl("SERVER [YOU]: PASSWORD ERRATA! Hai solo 3 tentativi per sessione. Inserisci la password MODERATORE\n", ((dati_client*)arg));
+         memset(password,'\0',sizeof(password));
          leggi_cl(password, ((dati_client*)arg));
          if(strcmp(password, mod_password)==0)
           break;
